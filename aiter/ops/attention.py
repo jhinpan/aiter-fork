@@ -809,7 +809,8 @@ def get_mla_metadata_info_v1(
         6. Shape of reduce_partial_map followed by its scalar type.
     """
 
-    assert num_head_qo % 16 == 0
+    # Support num_head_qo values used by models like Kimi-K2.5 (8 heads per GPU with TP=8)
+    assert num_head_qo in (8, 16, 32, 64, 128), f"num_head_qo={num_head_qo} not supported"
     gpu = torch.cuda.current_device()
     device_properties = torch.cuda.get_device_properties(gpu)
     cu_num = device_properties.multi_processor_count
